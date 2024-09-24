@@ -10,8 +10,8 @@ summary: 'We discuss some of the basic functionality of the JAX library and use 
 designed for ease of use on modern accelerator hardward (GPU/TPU). Its intended computational domain is large-scale machine 
 learning problems, such as deep learning with neural networks.  However, it's a general enough framework to be extended 
 to other numerical domains, such as quantitative finance for example. In fact, there's a growing "JAX ecosystem" of 
-numerical libraries documented on their site that implement JAX-enabled numerical methods such as minimization, root finding, 
-interpolation, quadrature etc.  All of these methods are used in the field of option pricing.   
+numerical libraries documented on their [site](https://jax.readthedocs.io/en/latest/index.html#ecosystem) that implement JAX-enabled numerical methods such as 
+minimization, root finding, interpolation, quadrature etc.  All of these methods are used in the field of option pricing.   
 
 My purpose in the post is to explore some the basics of this library in the context of a simple option pricing problem, 
 European Options in the Black Scholes model.  In later posts, I hope to extend this framework to other option contracts and models.   
@@ -215,8 +215,11 @@ pricing for computing pv's over collections of options.
 Next, using JAX's `vmap` and `grad` methods we can trivially implement vectorized greeks like the following
 
 ```python
-delta = vmap(grad(pv, 0))
+def delta(s, k, r, q, t, σ, ω):
+    s, k, r, q, t, σ, ω = map(asarray_inexact, (s, k, r, q, t, σ, ω))
+    return grad(pv, 0)(s, k, r, q, t, σ, ω)
 ```
+
 This maps the derivative of the pv function over its first argument, namely `s`
 
 We can compare this function with the analytic expression of `delta`
