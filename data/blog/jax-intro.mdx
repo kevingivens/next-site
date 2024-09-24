@@ -230,6 +230,21 @@ def delta_analytic(s, k, r, q, t, σ, ω):
     return jnp.exp(-q*t)*ω*(norm.cdf(ω*dp(t, s/k, r, q, σ)))
 ```
 
+```python
+s = jnp.linspace(70, 130, 100)
+k, r, q, t, σ, ω =  95.00, 0.10, 0.05, 0.1, 0.20, 1
+deltas = vmap(delta, in_axes=[0, None, None, None, None, None, None])(s, k, r, q, t, σ, ω)
+
+plt.plot(s, deltas, label="Call delta AD, $t = 0.1$", linewidth=2.0)
+plt.plot(s, delta_analytic(s, k, r, q, t, σ, ω), '--', label="Call delta analytic, $t = 0.1$", linewidth=2.0)
+plt.xlabel("Spot")
+plt.ylabel("Delta")
+plt.legend()
+plt.show()
+```
+
+![png](/static/images/bs_call_delta_jax.png)
+
 We see that both functions return the same output.  Other greeks can be computed similarly, for example 
 
 ```python
@@ -239,7 +254,6 @@ dividend_rho = vmap(grad(pv, 3))
 theta = vmap(grad(pv, 4))
 vega = vmap(grad(pv, 5))
 ```
-
 
 # Conclusion
 
